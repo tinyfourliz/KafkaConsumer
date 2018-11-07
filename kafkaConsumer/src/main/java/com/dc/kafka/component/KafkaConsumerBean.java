@@ -1,8 +1,5 @@
 package com.dc.kafka.component;
 
-
-
-
 import java.math.BigInteger;
 
 import org.web3j.crypto.Credentials;
@@ -10,6 +7,9 @@ import org.web3j.protocol.Web3j;
 import org.web3j.tx.Contract;
 import org.web3j.tx.ManagedTransaction;
 
+/*
+ *该类为kafka消费者Bean实体类，包含构建一个交易所需的全部信息。
+*/
 public class KafkaConsumerBean {
     //链ID
     private static final byte chainId = (byte) 10;
@@ -38,26 +38,26 @@ public class KafkaConsumerBean {
     	this.transactionDetailId = transactionDetailId;
     	this.contractName = contractName;
     	//this.credentials = credentials;
-    //	this.web3j = web3j;
+    	//this.web3j = web3j;
     	this.address = address;
     	this.gasPrice = gasPrice;
     	this.gasLimit = gasLimit;
     	this.turnBalance = turnBalance;
-    	this.keystoreFile=keystoreFile;
-    	this.password=password;
+    	this.keystoreFile = keystoreFile;
+    	this.password = password;
     }
     
    public KafkaConsumerBean(Integer transactionDetailId, String contractName,  String address, BigInteger turnBalance,String password,String keystoreFile){
     	this.transactionDetailId = transactionDetailId;
     	this.contractName = contractName;
-   // 	this.credentials = credentials;
-    //	this.web3j = web3j;
+	   	//this.credentials = credentials;
+	    //this.web3j = web3j;
     	this.address = address;
     	this.gasPrice = ManagedTransaction.GAS_PRICE;
     	this.gasLimit = Contract.GAS_LIMIT;
     	this.turnBalance = turnBalance;
-    	this.keystoreFile=keystoreFile;
-    	this.password=password;
+    	this.keystoreFile = keystoreFile;
+    	this.password = password;
     }
     
 	public Integer getTransactionDetailId() {
@@ -66,18 +66,6 @@ public class KafkaConsumerBean {
 	public void setTransactionDetailId(Integer transactionDetailId) {
 		this.transactionDetailId = transactionDetailId;
 	}
-/*	public Credentials getCredentials() {
-		return credentials;
-	}
-	public void setCredentials(Credentials credentials) {
-		this.credentials = credentials;
-	}*/
-/*	public Web3j getWeb3j() {
-		return web3j;
-	}
-	public void setWeb3j(Web3j web3j) {
-		this.web3j = web3j;
-	}*/
 	public String getAddress() {
 		return address;
 	}

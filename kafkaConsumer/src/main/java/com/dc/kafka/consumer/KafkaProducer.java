@@ -1,8 +1,5 @@
 package com.dc.kafka.consumer;
 
-
-
-
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -24,6 +21,7 @@ public class KafkaProducer {
 
     
     public void sendMessage(String topic,String key,KafkaConsumerBean kafkaEntity){
-        kafkaTemplate.send(new ProducerRecord(topic,key,gson.toJson(kafkaEntity))); //测试发送对象数据
+        //测试发送对象数据
+        kafkaTemplate.send(new ProducerRecord(topic,key,gson.toJson(kafkaEntity))); 
     }
 }

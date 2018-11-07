@@ -1,13 +1,9 @@
 package com.dc.kafka.consumer;
 
-
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.dc.kafka.component.KafkaConsumerBean;
-
-
 
 @Component
 public class KafkaUtil {
