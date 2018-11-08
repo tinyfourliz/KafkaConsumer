@@ -91,7 +91,7 @@ public class KafkaConsumerLessonBuy {
             System.out.println("将操作日志记录于表中:" + "INSERT INTO kafka_data (id, topic, hashres,createdate) VALUES (NULL, 'lessonbuy', '" + resultHash + "',sysdate())");
             jdbc.execute("INSERT INTO kafka_data (id, topic, hashres,createdate) VALUES (NULL, 'lessonbuy', '" + resultHash + "',sysdate())");
             
-            System.out.println("将交易Hash值更新至am_lessonbuy表中:" + "INSERT INTO kafka_data (id, topic, hashres,createdate) VALUES (NULL, 'lessonbuy', '" + resultHash + "',sysdate())");
+            System.out.println("将交易Hash值更新至am_lessonbuy表中:" + "UPDATE am_lessonbuy SET backup1='" + resultHash + "' WHERE id = " + bean.getTransactionDetailId() + "; ");
             jdbc.execute("UPDATE am_lessonbuy SET backup1='" + resultHash + "' WHERE id = " + bean.getTransactionDetailId() + "; ");
             
             return resultHash;

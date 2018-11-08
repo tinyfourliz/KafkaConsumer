@@ -27,7 +27,7 @@ public class LessonBuyController {
 
     private static String address = "0x861b6f2ca079e1cfa5da9b429fa9d82a6645b419";
 	@ResponseBody
-	@PostMapping("/insertBuyInfo")
+	@PostMapping("/processDeduction")
 	public void processLessonBuy(
 		@RequestParam(name = "itcode", required = true) String itcode,
 		@RequestParam(name = "transactionDetailId", required = true) Integer transactionDetailId,
