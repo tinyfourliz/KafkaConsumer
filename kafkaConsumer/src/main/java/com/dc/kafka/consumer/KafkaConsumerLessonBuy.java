@@ -40,8 +40,8 @@ public class KafkaConsumerLessonBuy {
     private Integer count = 1;
     
     private static String[] ip = {"http://10.7.10.124:8545","http://10.7.10.125:8545","http://10.0.5.217:8545","http://10.0.5.218:8545","http://10.0.5.219:8545" };
-//    private static final String rootPath = "/eth/datadir/temp/";
-    private static final String rootPath = "C:\\temp";
+    private static final String rootPath = "/eth/datadir/temp/";
+//    private static final String rootPath = "C:\\temp";
 
     @KafkaListener(topics = {"lessonbuy"})
     public String processor(ConsumerRecord<?, ?> record){
