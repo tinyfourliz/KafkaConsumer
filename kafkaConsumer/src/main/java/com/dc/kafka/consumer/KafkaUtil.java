@@ -8,10 +8,10 @@ import com.dc.kafka.component.KafkaConsumerBean;
 @Component
 public class KafkaUtil {
 	   @Autowired
-	    private KafkaProducer kafkaProducer;
+	   private KafkaProducer kafkaProducer;
 	   
-	   public String sendMessage(String topic,String key,KafkaConsumerBean kafkaEntity) {
-	    	kafkaProducer.sendMessage( topic, key,kafkaEntity);
+	   public String sendMessage(String topic, String key, KafkaConsumerBean kafkaEntity) {
+	    	kafkaProducer.sendMessage(topic, key, kafkaEntity);
 	        return "sucess";
-	    } 
+	   } 
 }

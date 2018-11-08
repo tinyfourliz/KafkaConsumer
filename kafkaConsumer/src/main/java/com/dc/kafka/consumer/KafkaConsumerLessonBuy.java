@@ -5,6 +5,7 @@ package com.dc.kafka.consumer;
 import org.web3j.tx.response.TransactionReceiptProcessor;
 
 import com.dc.kafka.component.KafkaConsumerBean;
+import com.dc.kafka.contract.Lesson;
 import com.dc.kafka.contract.Qiandao;
 import com.google.gson.Gson;
 
@@ -32,16 +33,17 @@ import org.web3j.tx.TransactionManager;
 import org.web3j.tx.response.NoOpProcessor;
 
 @Component
-public class KafkaConsumerQianDao {
+public class KafkaConsumerLessonBuy {
     
     @Autowired
     private JdbcTemplate jdbc;
     private Integer count = 1;
     
     private static String[] ip = {"http://10.7.10.124:8545","http://10.7.10.125:8545","http://10.0.5.217:8545","http://10.0.5.218:8545","http://10.0.5.219:8545" };
-    private static final String rootPath = "/eth/datadir/temp/";
+//    private static final String rootPath = "/eth/datadir/temp/";
+    private static final String rootPath = "C:\\temp";
 
-    @KafkaListener(topics = {"beatcard"})
+    @KafkaListener(topics = {"lessonbuy"})
     public String processor(ConsumerRecord<?, ?> record){
         Gson gson = new Gson();
         KafkaConsumerBean bean = gson.fromJson(record.value().toString(), KafkaConsumerBean.class);
@@ -58,9 +60,9 @@ public class KafkaConsumerQianDao {
             return null;
         }
 
-        Integer index= (int)(Math.random()*(5));
+        Integer index = (int)(Math.random()*(5));
         Web3j web3j = Web3j.build(new HttpService(ip[index]));
-        Credentials credentials= getCredentials(bean);
+        Credentials credentials = getCredentials(bean);
         TransactionReceiptProcessor transactionReceiptProcessor = new NoOpProcessor(web3j);
         TransactionManager transactionManager = null;
         try{
@@ -73,23 +75,25 @@ public class KafkaConsumerQianDao {
             return "error, build transaction manager failed.";
         }
        
-        Qiandao contract = Qiandao.load(bean.getAddress(),web3j, transactionManager, bean.getGasPrice(), bean.getGasLimit());
+        Lesson contract = Lesson.load(bean.getAddress(),web3j, transactionManager, bean.getGasPrice(), bean.getGasLimit());
         
         TransactionReceipt transactionReceipt;
         try {
-            transactionReceipt = contract.qiandaoReward(new Uint256(bean.getTurnBalance())).send();
+            transactionReceipt = contract.buyChapter(bean.getTurnBalance()).send();
             
             String resultHash = transactionReceipt.getTransactionHash();
             System.out.println(resultHash);
 
             if(resultHash == null) {
+                //FIXME 此处添加根据bean.getTransactionDetailId()更新resultHash。若 resultHash == null则为失败。需重新发送
                 toconsumer(bean);
             }
-
-            //FIXME 此处添加根据bean.getTransactionDetailId()更新resultHash。若 resultHash == null则为失败。需重新发送
-            System.out.println("INSERT INTO kafka_data (id, topic, hashres,createdate) VALUES (NULL, 'beatcard', '"+resultHash+"',sysdate())");
-            jdbc.execute("INSERT INTO kafka_data (id, topic, hashres,createdate) VALUES (NULL, 'beatcard', '"+resultHash+"',sysdate())");
-
+            System.out.println("将操作日志记录于表中:" + "INSERT INTO kafka_data (id, topic, hashres,createdate) VALUES (NULL, 'lessonbuy', '" + resultHash + "',sysdate())");
+            jdbc.execute("INSERT INTO kafka_data (id, topic, hashres,createdate) VALUES (NULL, 'lessonbuy', '" + resultHash + "',sysdate())");
+            
+            System.out.println("将交易Hash值更新至am_lessonbuy表中:" + "INSERT INTO kafka_data (id, topic, hashres,createdate) VALUES (NULL, 'lessonbuy', '" + resultHash + "',sysdate())");
+            jdbc.execute("UPDATE am_lessonbuy SET backup1='" + resultHash + "' WHERE id = " + bean.getTransactionDetailId() + "; ");
+            
             return resultHash;
         } catch (Exception e) {
             // TODO Auto-generated catch block

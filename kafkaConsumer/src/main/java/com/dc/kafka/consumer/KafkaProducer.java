@@ -20,8 +20,8 @@ public class KafkaProducer {
     private Gson gson = new GsonBuilder().create();
 
     
-    public void sendMessage(String topic,String key,KafkaConsumerBean kafkaEntity){
+    public void sendMessage(String topic, String key, KafkaConsumerBean kafkaEntity){
         //测试发送对象数据
-        kafkaTemplate.send(new ProducerRecord(topic,key,gson.toJson(kafkaEntity))); 
+        kafkaTemplate.send(new ProducerRecord(topic, key, gson.toJson(kafkaEntity))); 
     }
 }
