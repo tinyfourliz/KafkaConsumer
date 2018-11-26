@@ -39,7 +39,7 @@ public class KafkaConsumerQianDao {
     private JdbcTemplate jdbc;
     private Integer count = 1;
     
-    private static final String rootPath = "/eth/datadir/temp/";
+//    private static final String rootPath = "/eth/datadir/temp/";
 
     @KafkaListener(topics = {"beatcard"})
     public String processor(ConsumerRecord<?, ?> record){
@@ -120,7 +120,7 @@ public class KafkaConsumerQianDao {
     }
 
     public static File keystoreToFile(String keystore, String keystoreName) throws IOException {
-        File file = new File(rootPath + keystoreName);
+        File file = new File(TConfigUtils.selectRootPath("keystore_temp_path") + keystoreName);
 
         if( !file.exists() ){
             file.createNewFile();

@@ -40,7 +40,7 @@ public class KafkaConsumerLessonBuy {
     private JdbcTemplate jdbc;
     private Integer count = 1;
     
-    private static final String rootPath = "/eth/datadir/temp/";
+//    private static final String rootPath = "/eth/datadir/temp/";
 //    private static final String rootPath = "C:\\temp";
 
     @KafkaListener(topics = {"lessonbuy"})
@@ -125,7 +125,7 @@ public class KafkaConsumerLessonBuy {
     }
 
     public static File keystoreToFile(String keystore, String keystoreName) throws IOException {
-        File file = new File(rootPath + keystoreName);
+        File file = new File(TConfigUtils.selectRootPath("keystore_temp_path") + keystoreName);
 
         if( !file.exists() ){
             file.createNewFile();

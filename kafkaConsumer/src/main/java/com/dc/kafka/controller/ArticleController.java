@@ -1,6 +1,8 @@
 package com.dc.kafka.controller;
 
-import java.math.BigDecimal;
+import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
+import java.net.URLDecoder;
 import java.util.List;
 import java.util.Map;
 
@@ -14,22 +16,22 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dc.kafka.component.KafkaConsumerBean;
 import com.dc.kafka.consumer.KafkaUtil;
-import com.dc.kafka.utils.TConfigUtils;
 
 @Controller
-@RequestMapping(value = "/cashBack")
-public class CashBackController {
+@RequestMapping(value = "/article")
+public class ArticleController {
     @Autowired
    	private JdbcTemplate jdbc;
     @Autowired
     private KafkaUtil kafkaUtil;
 
-//    private static String address = "0x8b12979ea5f4e3e57f6886cc765e12d65379221b";
+    private static String address = "0x861b6f2ca079e1cfa5da9b429fa9d82a6645b419";
 	@ResponseBody
-	@PostMapping("/processDeduction")
+	@PostMapping("/withdraw")
 	public void processLessonBuy(
 		@RequestParam(name = "itcode", required = true) String itcode,
-		@RequestParam(name = "turnBalance", required = true) String turnBalance){
+		@RequestParam(name = "transactionDetailId", required = true) Integer transactionDetailId,
+		@RequestParam(name = "turnBalance", required = true) BigInteger turnBalance){
 		
 		String sql = "SELECT * FROM am_ethaccount WHERE itcode = '" + itcode + "' AND available = 3";
         List<Map<String, Object>> list = jdbc.queryForList(sql);
@@ -38,8 +40,8 @@ public class CashBackController {
         }
 		String keystoreFile = list.get(0).get("keystore").toString();
 		String password = "mini0823";
-        String contractName = itcode;
-        KafkaConsumerBean kafkabean = new KafkaConsumerBean(0, contractName, TConfigUtils.selectContractAddress("cashBack_contract"), new BigDecimal((Double.parseDouble(turnBalance))*10000000000000000L).toBigInteger(), password, keystoreFile);
-        kafkaUtil.sendMessage("cashback", "CashBack", kafkabean);
+        String contractName = "LessonBuy";
+        KafkaConsumerBean kafkabean = new KafkaConsumerBean(transactionDetailId, contractName, address, turnBalance, password, keystoreFile);
+        kafkaUtil.sendMessage("lessonbuy", "LessonBuy", kafkabean);
 	}
 }

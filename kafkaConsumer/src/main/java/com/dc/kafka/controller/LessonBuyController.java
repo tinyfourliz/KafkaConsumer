@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dc.kafka.component.KafkaConsumerBean;
 import com.dc.kafka.consumer.KafkaUtil;
+import com.dc.kafka.utils.TConfigUtils;
 
 @Controller
 @RequestMapping(value = "/lessonBuy")
@@ -25,7 +26,7 @@ public class LessonBuyController {
     @Autowired
     private KafkaUtil kafkaUtil;
 
-    private static String address = "0x861b6f2ca079e1cfa5da9b429fa9d82a6645b419";
+//    private static String address = "0x861b6f2ca079e1cfa5da9b429fa9d82a6645b419";
 	@ResponseBody
 	@PostMapping("/processDeduction")
 	public void processLessonBuy(
@@ -41,7 +42,7 @@ public class LessonBuyController {
 		String keystoreFile = list.get(0).get("keystore").toString();
 		String password = "mini0823";
         String contractName = "LessonBuy";
-        KafkaConsumerBean kafkabean = new KafkaConsumerBean(transactionDetailId, contractName, address, turnBalance, password, keystoreFile);
+        KafkaConsumerBean kafkabean = new KafkaConsumerBean(transactionDetailId, contractName, TConfigUtils.selectContractAddress("lesson_contract"), turnBalance, password, keystoreFile);
         kafkaUtil.sendMessage("lessonbuy", "LessonBuy", kafkabean);
 	}
 }

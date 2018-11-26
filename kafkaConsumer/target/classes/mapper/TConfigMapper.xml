@@ -19,4 +19,30 @@
 		AND
 			cfg_status = 1
 	</select>
+	
+	<select id="selectContractAddress" resultType="java.lang.String" parameterType="java.lang.String">
+		SELECT
+			cfg_value
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			cfg_extra = 'ContractAddress'
+		AND
+			cfg_key = #{cfgKey,jdbcType=VARCHAR}
+		AND
+			cfg_status = 1
+	</select>
+	
+	<select id="selectRootPath" resultType="java.lang.String" parameterType="java.lang.String">
+		SELECT
+			cfg_value
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			cfg_extra = 'TempPath'
+		AND
+			cfg_key = #{cfgKey,jdbcType=VARCHAR}
+		AND
+			cfg_status = 1
+	</select>
 </mapper>
