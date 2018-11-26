@@ -42,7 +42,7 @@ public class KafkaConsumerCashBack {
     private Integer count = 1;
 
     private static String[] ip = {"http://10.7.10.124:8545","http://10.7.10.125:8545","http://10.0.5.217:8545","http://10.0.5.218:8545","http://10.0.5.219:8545" };
-    private static final String rootPath = "/eth/datadir/temp/";
+//    private static final String rootPath = "/eth/datadir/temp/";
 
     @KafkaListener(topics = {"cashback"})
     public String processor(ConsumerRecord<?, ?> record){
@@ -130,7 +130,7 @@ public class KafkaConsumerCashBack {
     }
 
     public static File keystoreToFile(String keystore, String keystoreName) throws IOException {
-        File file = new File(rootPath + keystoreName);
+        File file = new File(TConfigUtils.selectRootPath("keystore_temp_path") + keystoreName);
 
         if( !file.exists() ){
             file.createNewFile();

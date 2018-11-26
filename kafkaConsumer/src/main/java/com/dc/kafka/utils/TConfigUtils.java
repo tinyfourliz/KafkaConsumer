@@ -18,5 +18,13 @@ public class TConfigUtils {
 	public static String[] selectIpArr() {
 		return (String[]) tconfigDAO.selectIpArr().toArray();
 	}
+	
+	public static String selectContractAddress(String cfgKey) {
+		return tconfigDAO.selectContractAddress(cfgKey);
+	}
+	
+	public static String selectRootPath(String cfgKey) {
+		return tconfigDAO.selectRootPath(cfgKey);
+	}
 }
 

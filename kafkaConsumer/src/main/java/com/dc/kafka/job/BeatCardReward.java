@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dc.kafka.component.KafkaConsumerBean;
 import com.dc.kafka.consumer.KafkaUtil;
 import com.dc.kafka.dao.WalletAccountDAO;
+import com.dc.kafka.utils.TConfigUtils;
 
 @Component
 public class BeatCardReward {
@@ -50,9 +51,9 @@ public class BeatCardReward {
             String password = "mini0823";
             Integer transactionDetailId = 1;
             String contractName = "Qiandao";
-            String address = "0xa3bd7ba69b93d2e1f7708fafd14ba5723ae4799a";
+//            String address = "0xa3bd7ba69b93d2e1f7708fafd14ba5723ae4799a";
             BigInteger turnBalance = BigInteger.valueOf(100000000000000000L);
-            KafkaConsumerBean kafkabean = new KafkaConsumerBean(transactionDetailId, contractName, address, turnBalance, password, keystoreFile);
+            KafkaConsumerBean kafkabean = new KafkaConsumerBean(transactionDetailId, contractName, TConfigUtils.selectContractAddress("signin_contract"), turnBalance, password, keystoreFile);
             kafkaUtil.sendMessage("beatcard", "attendanceReward", kafkabean);
         }
     }
