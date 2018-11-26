@@ -10,14 +10,12 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.ExecutionException;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
-import org.web3j.abi.datatypes.generated.Uint256;
 import org.web3j.crypto.CipherException;
 import org.web3j.crypto.Credentials;
 import org.web3j.crypto.RawTransaction;
@@ -26,12 +24,7 @@ import org.web3j.crypto.WalletUtils;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.protocol.core.methods.response.EthGetTransactionCount;
-import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.protocol.http.HttpService;
-import org.web3j.tx.RawTransactionManager;
-import org.web3j.tx.TransactionManager;
-import org.web3j.tx.response.NoOpProcessor;
-import org.web3j.tx.response.TransactionReceiptProcessor;
 import org.web3j.utils.Numeric;
 
 import com.dc.kafka.component.KafkaConsumerBean;
@@ -43,17 +36,13 @@ public class KafkaConsumerEthAccount {
     
     @Autowired
     private JdbcTemplate jdbc;
-    private Integer count = 1;
-
-//    private static String[] ip = {"http://10.7.10.124:8545","http://10.7.10.125:8545","http://10.0.5.217:8545","http://10.0.5.218:8545","http://10.0.5.219:8545" };
-//    private static final String rootPath = "/eth/datadir/temp/";
 
     @KafkaListener(topics = {"withdrawconfirm"})
     public String processor(ConsumerRecord<?, ?> record){
         Gson gson = new Gson();
         KafkaConsumerBean bean = gson.fromJson(record.value().toString(), KafkaConsumerBean.class);
-        count = 1;
-        return toconsumer(bean);
+        Integer count = 1;
+        return toconsumer(bean, count);
     }
     
 //    @KafkaListener(topics = {"withdrawconfirm"})
@@ -64,7 +53,7 @@ public class KafkaConsumerEthAccount {
 //        return toconsumer(bean);
 //    }
 
-    public String toconsumer(KafkaConsumerBean bean) {
+    public String toconsumer(KafkaConsumerBean bean, Integer count) {
         count ++;
         System.out.println(count);
         //默认超过100次则该任务失效。
@@ -99,44 +88,25 @@ public class KafkaConsumerEthAccount {
 				}
 			}
 			if(resultHash.equals("") || resultHash == null){
-        		toconsumer(bean);
+        		toconsumer(bean,count);
         	}
+			
+			System.out.println("将操作日志记录于表中:" + "INSERT INTO kafka_data (id, topic, hashres,createdate) VALUES (NULL, 'withdrawConfirm', '" + resultHash + "',sysdate())");
+			jdbc.execute("INSERT INTO kafka_data (id, topic, hashres,createdate) VALUES (" + bean.getTransactionDetailId() + ", 'withdrawConfirm', '" + resultHash + "',sysdate())");
+			  
+			System.out.println("将交易哈希记录至am_wallettransaction表中:" + "INSERT INTO am_wallettransaction (transactionHash) VALUES ("+ resultHash + ") " + "WHERE id = " + bean.getTransactionDetailId());
+			jdbc.execute("INSERT INTO am_wallettransaction (transactionHash) VALUES (" + resultHash + ") " + "WHERE id = " + bean.getTransactionDetailId());
 			return resultHash;
 		} catch (Exception e) {
 			e.printStackTrace();
 			if(resultHash.equals("")){
-        		toconsumer(bean);
+        		toconsumer(bean,count);
         		System.out.println("第"+count+"次重发");
         	}
             return "error, transaction hash is null.";
 		}
 	}
         
-//        String resultHash="";
-//        try {
-//            if(resultHash == null) {
-//                //FIXME 此处添加根据bean.getTransactionDetailId()更新resultHash。若 resultHash == null则为失败。需重新发送
-//                toconsumer(bean);
-//            }
-//            System.out.println("将操作日志记录于表中:" + "INSERT INTO kafka_data (id, topic, hashres,createdate) VALUES (NULL, 'lessonbuy', '" + resultHash + "',sysdate())");
-//            jdbc.execute("INSERT INTO kafka_data (id, topic, hashres,createdate) VALUES (NULL, 'cashback', '" + resultHash + "',sysdate())");
-//            
-//            System.out.println("将返现信息记录至vm_cashback_details表中:" + "INSERT INTO vm_cashback_details (itcode, account, cashBackValue, limitFlag) VALUES ("+ bean.getContractName() + ", " + transactionManager.getFromAddress() + ", " + bean.getTurnBalance() + ", 1");
-//            jdbc.execute("INSERT INTO vm_cashback_details (itcode, account, cashBackValue, limitFlag) VALUES ('"+ bean.getContractName() + "', '" + transactionManager.getFromAddress() + "', " + bean.getTurnBalance().doubleValue()/10000000000000000L + ", 1)");
-//            resultHash="";
-//            return resultHash;
-//        } catch (Exception e) {
-//            // TODO Auto-generated catch block
-//        	if(resultHash.equals("")){
-//        		toconsumer(bean);
-//        		System.out.println("第"+count+"次重发");
-//        	}
-//        		
-//            e.printStackTrace();
-//            
-//            return "error, transaction hash is null.";
-//        }
-    
     private static  Credentials getCredentials(KafkaConsumerBean bean) {
         File keystoreFile;
         System.out.println("开始解锁。。。");
