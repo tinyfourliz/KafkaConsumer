@@ -6,6 +6,7 @@ import org.web3j.tx.response.TransactionReceiptProcessor;
 
 import com.dc.kafka.component.KafkaConsumerBean;
 import com.dc.kafka.contract.Qiandao;
+import com.dc.kafka.utils.TConfigUtils;
 import com.google.gson.Gson;
 
 
@@ -38,7 +39,6 @@ public class KafkaConsumerQianDao {
     private JdbcTemplate jdbc;
     private Integer count = 1;
     
-    private static String[] ip = {"http://10.7.10.124:8545","http://10.7.10.125:8545","http://10.0.5.217:8545","http://10.0.5.218:8545","http://10.0.5.219:8545" };
     private static final String rootPath = "/eth/datadir/temp/";
 
     @KafkaListener(topics = {"beatcard"})
@@ -58,8 +58,7 @@ public class KafkaConsumerQianDao {
             return null;
         }
 
-        Integer index= (int)(Math.random()*(5));
-        Web3j web3j = Web3j.build(new HttpService(ip[index]));
+        Web3j web3j = Web3j.build(new HttpService(TConfigUtils.selectIp()));
         Credentials credentials= getCredentials(bean);
         TransactionReceiptProcessor transactionReceiptProcessor = new NoOpProcessor(web3j);
         TransactionManager transactionManager = null;
