@@ -26,5 +26,9 @@ public class TConfigUtils {
 	public static String selectRootPath(String cfgKey) {
 		return tconfigDAO.selectRootPath(cfgKey);
 	}
+	
+	public static String selectDefaultPassword() {
+		return tconfigDAO.selectDefaultPassword();
+	}
 }
 

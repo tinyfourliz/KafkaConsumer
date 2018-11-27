@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dc.kafka.component.KafkaConsumerBean;
 import com.dc.kafka.consumer.KafkaUtil;
+import com.dc.kafka.utils.TConfigUtils;
 
 @Controller
 @RequestMapping(value = "/article")
@@ -39,7 +40,7 @@ public class ArticleController {
         	return;
         }
 		String keystoreFile = list.get(0).get("keystore").toString();
-		String password = "mini0823";
+		String password = TConfigUtils.selectDefaultPassword();
         String contractName = "LessonBuy";
         KafkaConsumerBean kafkabean = new KafkaConsumerBean(transactionDetailId, contractName, address, turnBalance, password, keystoreFile);
         kafkaUtil.sendMessage("lessonbuy", "LessonBuy", kafkabean);

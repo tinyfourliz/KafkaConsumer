@@ -94,8 +94,8 @@ public class KafkaConsumerEthAccount {
 			System.out.println("将操作日志记录于表中:" + "INSERT INTO kafka_data (id, topic, hashres,createdate) VALUES (NULL, 'withdrawConfirm', '" + resultHash + "',sysdate())");
 			jdbc.execute("INSERT INTO kafka_data (id, topic, hashres,createdate) VALUES (" + bean.getTransactionDetailId() + ", 'withdrawConfirm', '" + resultHash + "',sysdate())");
 			  
-			System.out.println("将交易哈希记录至am_wallettransaction表中:" + "INSERT INTO am_wallettransaction (transactionHash) VALUES ("+ resultHash + ") " + "WHERE id = " + bean.getTransactionDetailId());
-			jdbc.execute("INSERT INTO am_wallettransaction (transactionHash) VALUES (" + resultHash + ") " + "WHERE id = " + bean.getTransactionDetailId());
+			System.out.println("将交易哈希记录至am_wallettransaction表中:" + "UPDATE am_wallettransaction SET transactionHash = '" + resultHash + "' WHERE id = " + bean.getTransactionDetailId());
+			jdbc.execute("UPDATE am_wallettransaction SET transactionHash = '" + resultHash + "' WHERE id = " + bean.getTransactionDetailId());
 			return resultHash;
 		} catch (Exception e) {
 			e.printStackTrace();

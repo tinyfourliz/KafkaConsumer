@@ -39,7 +39,7 @@ public class EthAccountController {
         }
         String defaultAcc = list.get(0).get("account").toString();
 		String keystoreFile = list.get(0).get("keystore").toString();
-		String password = "mini0823";
+		String password = TConfigUtils.selectDefaultPassword();
         KafkaConsumerBean kafkabean = new KafkaConsumerBean(transactionDetailId, defaultAcc, account, turnBalance.toBigInteger(), password, keystoreFile);
         kafkaUtil.sendMessage("withdrawconfirm", "WithdrawConfirm", kafkabean);
 	}

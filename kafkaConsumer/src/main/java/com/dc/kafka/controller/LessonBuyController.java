@@ -40,7 +40,7 @@ public class LessonBuyController {
         	return;
         }
 		String keystoreFile = list.get(0).get("keystore").toString();
-		String password = "mini0823";
+		String password = TConfigUtils.selectDefaultPassword();
         String contractName = "LessonBuy";
         KafkaConsumerBean kafkabean = new KafkaConsumerBean(transactionDetailId, contractName, TConfigUtils.selectContractAddress("lesson_contract"), turnBalance, password, keystoreFile);
         kafkaUtil.sendMessage("lessonbuy", "LessonBuy", kafkabean);
