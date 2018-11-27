@@ -1,8 +1,6 @@
 package com.dc.kafka.controller;
 
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
-import java.net.URLDecoder;
 import java.util.List;
 import java.util.Map;
 
@@ -19,18 +17,18 @@ import com.dc.kafka.consumer.KafkaUtil;
 import com.dc.kafka.utils.TConfigUtils;
 
 @Controller
-@RequestMapping(value = "/article")
-public class ArticleController {
+@RequestMapping(value = "/paidVotes")
+public class PaidVoteController {
     @Autowired
    	private JdbcTemplate jdbc;
     @Autowired
     private KafkaUtil kafkaUtil;
 
-    private static String address = "0x861b6f2ca079e1cfa5da9b429fa9d82a6645b419";
 	@ResponseBody
-	@PostMapping("/withdraw")
-	public void processLessonBuy(
+	@PostMapping("/insertVoteDetail")
+	public void balanceQuery(
 		@RequestParam(name = "itcode", required = true) String itcode,
+		@RequestParam(name = "account", required = true) String account,
 		@RequestParam(name = "transactionDetailId", required = true) Integer transactionDetailId,
 		@RequestParam(name = "turnBalance", required = true) BigInteger turnBalance){
 		
@@ -41,8 +39,7 @@ public class ArticleController {
         }
 		String keystoreFile = list.get(0).get("keystore").toString();
 		String password = TConfigUtils.selectDefaultPassword();
-        String contractName = "LessonBuy";
-        KafkaConsumerBean kafkabean = new KafkaConsumerBean(transactionDetailId, contractName, address, turnBalance, password, keystoreFile);
-        kafkaUtil.sendMessage("lessonbuy", "LessonBuy", kafkabean);
+        KafkaConsumerBean kafkabean = new KafkaConsumerBean(transactionDetailId, account, TConfigUtils.selectContractAddress("paidvote_contract"), turnBalance, password, keystoreFile);
+        kafkaUtil.sendMessage("paidvote", "paidVote", kafkabean);
 	}
 }

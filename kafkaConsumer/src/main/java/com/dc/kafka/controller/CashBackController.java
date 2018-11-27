@@ -37,7 +37,7 @@ public class CashBackController {
         	return;
         }
 		String keystoreFile = list.get(0).get("keystore").toString();
-		String password = "mini0823";
+		String password = TConfigUtils.selectDefaultPassword();
         String contractName = itcode;
         KafkaConsumerBean kafkabean = new KafkaConsumerBean(0, contractName, TConfigUtils.selectContractAddress("cashBack_contract"), new BigDecimal((Double.parseDouble(turnBalance))*10000000000000000L).toBigInteger(), password, keystoreFile);
         kafkaUtil.sendMessage("cashback", "CashBack", kafkabean);

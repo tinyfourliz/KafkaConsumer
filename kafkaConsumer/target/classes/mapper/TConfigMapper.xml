@@ -45,4 +45,15 @@
 		AND
 			cfg_status = 1
 	</select>
+	
+	<select id="selectDefaultPassword" resultType="java.lang.String">
+		SELECT
+			cfg_value
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			cfg_extra = 'DefaultPassword'
+		AND
+			cfg_status = 1
+	</select>
 </mapper>
