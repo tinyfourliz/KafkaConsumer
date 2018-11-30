@@ -41,15 +41,38 @@ public class KafkaConsumerQianDao {
     
 //    private static final String rootPath = "/eth/datadir/temp/";
 
-    @KafkaListener(topics = {"beatcard"})
-    public String processor(ConsumerRecord<?, ?> record){
+    @KafkaListener(topics = {"attendanceReward"})
+    public String processorBeatcard(ConsumerRecord<?, ?> record){
         Gson gson = new Gson();
         KafkaConsumerBean bean = gson.fromJson(record.value().toString(), KafkaConsumerBean.class);
         count = 1;
-        return toconsumer(bean);
+        return attendanceReward(bean);
     }
-
-    public String toconsumer(KafkaConsumerBean bean) {
+    
+    @KafkaListener(topics = {"chargeSigninContract"})
+    public String processorChargeToSigninContract(ConsumerRecord<?, ?> record){
+        Gson gson = new Gson();
+        KafkaConsumerBean bean = gson.fromJson(record.value().toString(), KafkaConsumerBean.class);
+        count = 1;
+        return chargeToSigninContract(bean);
+    }
+    
+    @KafkaListener(topics = {"signinReward"})
+    public String processorSigninReward(ConsumerRecord<?, ?> record){
+        Gson gson = new Gson();
+        KafkaConsumerBean bean = gson.fromJson(record.value().toString(), KafkaConsumerBean.class);
+        count = 1;
+        return signinReward(bean);
+    }
+    
+    @KafkaListener(topics = {"voteReward"})
+    public String processorVoteReward(ConsumerRecord<?, ?> record){
+        Gson gson = new Gson();
+        KafkaConsumerBean bean = gson.fromJson(record.value().toString(), KafkaConsumerBean.class);
+        count = 1;
+        return voteReward(bean);
+    }
+    public String voteReward(KafkaConsumerBean bean) {
         count ++;
         System.out.println(count);
         //默认超过100次则该任务失效。
@@ -68,7 +91,7 @@ public class KafkaConsumerQianDao {
             // TODO Auto-generated catch block
             e.printStackTrace();
             System.err.println("构建交易管理异常！");
-            toconsumer(bean);
+            voteReward(bean);
             return "error, build transaction manager failed.";
         }
        
@@ -82,18 +105,174 @@ public class KafkaConsumerQianDao {
             System.out.println(resultHash);
 
             if(resultHash == null) {
-                toconsumer(bean);
+            	voteReward(bean);
             }
 
             //FIXME 此处添加根据bean.getTransactionDetailId()更新resultHash。若 resultHash == null则为失败。需重新发送
-            System.out.println("INSERT INTO kafka_data (id, topic, hashres,createdate) VALUES (NULL, 'beatcard', '"+resultHash+"',sysdate())");
-            jdbc.execute("INSERT INTO kafka_data (id, topic, hashres,createdate) VALUES (NULL, 'beatcard', '"+resultHash+"',sysdate())");
+            System.out.println("INSERT INTO kafka_data (id, topic, hashres,createdate) VALUES (NULL, 'voteReward', '"+resultHash+"',sysdate())");
+            jdbc.execute("INSERT INTO kafka_data (id, topic, hashres,createdate) VALUES (NULL, 'voteReward', '"+resultHash+"',sysdate())");
+            
+            System.out.println("将交易Hash值更新至t_signinreward表中:" + "UPDATE t_signinreward SET transactionhash='" + resultHash + "', backup1='每日投票奖励！' WHERE id = " + bean.getTransactionDetailId() + "; ");
+            jdbc.execute("UPDATE t_signinreward SET transactionhash='" + resultHash + "', backup1='每日投票奖励！' WHERE id = " + bean.getTransactionDetailId() + "; ");
+            
+            return resultHash;
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            voteReward(bean);
+            return "error, transaction hash is null.";
+        }
+    }
+    
+    public String signinReward(KafkaConsumerBean bean) {
+        count ++;
+        System.out.println(count);
+        //默认超过100次则该任务失效。
+        if(count > 100) {
+            count = 1;
+            return null;
+        }
+
+        Web3j web3j = Web3j.build(new HttpService(TConfigUtils.selectIp()));
+        Credentials credentials= getCredentials(bean);
+        TransactionReceiptProcessor transactionReceiptProcessor = new NoOpProcessor(web3j);
+        TransactionManager transactionManager = null;
+        try{
+            transactionManager = new RawTransactionManager(web3j, credentials, KafkaConsumerBean.getChainid(), transactionReceiptProcessor);
+        }catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            System.err.println("构建交易管理异常！");
+            signinReward(bean);
+            return "error, build transaction manager failed.";
+        }
+       
+        Qiandao contract = Qiandao.load(bean.getAddress(),web3j, transactionManager, bean.getGasPrice(), bean.getGasLimit());
+        
+        TransactionReceipt transactionReceipt;
+        try {
+            transactionReceipt = contract.qiandaoReward(new Uint256(bean.getTurnBalance())).send();
+            
+            String resultHash = transactionReceipt.getTransactionHash();
+            System.out.println(resultHash);
+
+            if(resultHash == null) {
+            	signinReward(bean);
+            }
+
+            //FIXME 此处添加根据bean.getTransactionDetailId()更新resultHash。若 resultHash == null则为失败。需重新发送
+            System.out.println("INSERT INTO kafka_data (id, topic, hashres,createdate) VALUES (NULL, 'signinReward', '"+resultHash+"',sysdate())");
+            jdbc.execute("INSERT INTO kafka_data (id, topic, hashres,createdate) VALUES (NULL, 'signinReward', '"+resultHash+"',sysdate())");
+            
+            System.out.println("将交易Hash值更新至t_signinreward表中:" + "UPDATE t_signinreward SET transactionhash='" + resultHash + "', backup1='每日签到奖励！' WHERE id = " + bean.getTransactionDetailId() + "; ");
+            jdbc.execute("UPDATE t_signinreward SET transactionhash='" + resultHash + "', backup1='每日签到奖励！' WHERE id = " + bean.getTransactionDetailId() + "; ");
+            
+            return resultHash;
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            signinReward(bean);
+            return "error, transaction hash is null.";
+        }
+    }
+    
+    public String chargeToSigninContract(KafkaConsumerBean bean) {
+        count ++;
+        System.out.println(count);
+        //默认超过100次则该任务失效。
+        if(count > 100) {
+            count = 1;
+            return null;
+        }
+
+        Web3j web3j = Web3j.build(new HttpService(TConfigUtils.selectIp()));
+        Credentials credentials= getCredentials(bean);
+        TransactionReceiptProcessor transactionReceiptProcessor = new NoOpProcessor(web3j);
+        TransactionManager transactionManager = null;
+        try{
+            transactionManager = new RawTransactionManager(web3j, credentials, KafkaConsumerBean.getChainid(), transactionReceiptProcessor);
+        }catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            System.err.println("构建交易管理异常！");
+            chargeToSigninContract(bean);
+            return "error, build transaction manager failed.";
+        }
+       
+        Qiandao contract = Qiandao.load(bean.getAddress(),web3j, transactionManager, bean.getGasPrice(), bean.getGasLimit());
+        
+        TransactionReceipt transactionReceipt;
+        try {
+            transactionReceipt = contract.chargeToContract(bean.getTurnBalance()).send();
+            
+            String resultHash = transactionReceipt.getTransactionHash();
+            System.out.println(resultHash);
+
+            if(resultHash == null) {
+            	chargeToSigninContract(bean);
+            }
+
+            //FIXME 此处添加根据bean.getTransactionDetailId()更新resultHash。若 resultHash == null则为失败。需重新发送
+            System.out.println("INSERT INTO kafka_data (id, topic, hashres,createdate) VALUES (NULL, 'chargeSigninContract', '"+resultHash+"',sysdate())");
+            jdbc.execute("INSERT INTO kafka_data (id, topic, hashres,createdate) VALUES (NULL, 'chargeSigninContract', '"+resultHash+"',sysdate())");
 
             return resultHash;
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-            toconsumer(bean);
+            chargeToSigninContract(bean);
+            return "error, transaction hash is null.";
+        }
+    }
+    
+    public String attendanceReward(KafkaConsumerBean bean) {
+        count ++;
+        System.out.println(count);
+        //默认超过100次则该任务失效。
+        if(count > 100) {
+            count = 1;
+            return null;
+        }
+
+        Web3j web3j = Web3j.build(new HttpService(TConfigUtils.selectIp()));
+        Credentials credentials= getCredentials(bean);
+        TransactionReceiptProcessor transactionReceiptProcessor = new NoOpProcessor(web3j);
+        TransactionManager transactionManager = null;
+        try{
+            transactionManager = new RawTransactionManager(web3j, credentials, KafkaConsumerBean.getChainid(), transactionReceiptProcessor);
+        }catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            System.err.println("构建交易管理异常！");
+            attendanceReward(bean);
+            return "error, build transaction manager failed.";
+        }
+       
+        Qiandao contract = Qiandao.load(bean.getAddress(),web3j, transactionManager, bean.getGasPrice(), bean.getGasLimit());
+        
+        TransactionReceipt transactionReceipt;
+        try {
+            transactionReceipt = contract.qiandaoReward(new Uint256(bean.getTurnBalance())).send();
+            
+            String resultHash = transactionReceipt.getTransactionHash();
+            System.out.println(resultHash);
+
+            if(resultHash == null) {
+            	attendanceReward(bean);
+            }
+
+            //FIXME 此处添加根据bean.getTransactionDetailId()更新resultHash。若 resultHash == null则为失败。需重新发送
+            System.out.println("INSERT INTO kafka_data (id, topic, hashres,createdate) VALUES (NULL, 'attendanceReward', '"+resultHash+"',sysdate())");
+            jdbc.execute("INSERT INTO kafka_data (id, topic, hashres,createdate) VALUES (NULL, 'attendanceReward', '"+resultHash+"',sysdate())");
+            
+            System.out.println("将交易Hash值更新至t_signinreward表中:" + "UPDATE t_signinreward SET transactionhash='" + resultHash + "', backup1='每日考勤奖励！' WHERE id = " + bean.getTransactionDetailId() + "; ");
+            jdbc.execute("UPDATE t_signinreward SET transactionhash='" + resultHash + "', backup1='每日考勤奖励！' WHERE id = " + bean.getTransactionDetailId() + "; ");
+            
+            return resultHash;
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            attendanceReward(bean);
             return "error, transaction hash is null.";
         }
     }
