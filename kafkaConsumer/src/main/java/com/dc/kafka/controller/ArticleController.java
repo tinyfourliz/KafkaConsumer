@@ -1,8 +1,6 @@
 package com.dc.kafka.controller;
 
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
-import java.net.URLDecoder;
 import java.util.List;
 import java.util.Map;
 
@@ -26,7 +24,6 @@ public class ArticleController {
     @Autowired
     private KafkaUtil kafkaUtil;
 
-    private static String address = "0x861b6f2ca079e1cfa5da9b429fa9d82a6645b419";
 	@ResponseBody
 	@PostMapping("/withdraw")
 	public void processLessonBuy(
@@ -41,8 +38,8 @@ public class ArticleController {
         }
 		String keystoreFile = list.get(0).get("keystore").toString();
 		String password = TConfigUtils.selectDefaultPassword();
-        String contractName = "LessonBuy";
-        KafkaConsumerBean kafkabean = new KafkaConsumerBean(transactionDetailId, contractName, address, turnBalance, password, keystoreFile);
-        kafkaUtil.sendMessage("lessonbuy", "LessonBuy", kafkabean);
+        String contractName = "Article";
+        KafkaConsumerBean kafkabean = new KafkaConsumerBean(transactionDetailId, contractName, TConfigUtils.selectContractAddress("article_contract"), turnBalance, password, keystoreFile);
+        kafkaUtil.sendMessage("withdraw", "withdraw", kafkabean);
 	}
 }
