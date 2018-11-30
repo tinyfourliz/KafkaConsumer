@@ -1,34 +1,47 @@
 package com.dc.kafka.utils;
 
+import java.util.List;
+
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
 
 import com.dc.kafka.dao.TConfigDAO;
 
 import scala.util.Random;
 
+@Configuration
 public class TConfigUtils {
 	@Autowired
-	public static TConfigDAO tconfigDAO;
+	private TConfigDAO tconfigDAO;
+	
+	private static TConfigDAO newtconfigDAO;
+	
+	@PostConstruct
+	public void init() {
+		newtconfigDAO = tconfigDAO;
+	}
 	
 	public static String selectIp() {
-		String[] ipArr = (String[]) tconfigDAO.selectIpArr().toArray();
-		return ipArr[new Random().nextInt(5)];
+		List<String> ipArr = newtconfigDAO.selectIpArr();
+		return ipArr.get(new Random().nextInt(5));
 	}
 	
 	public static String[] selectIpArr() {
-		return (String[]) tconfigDAO.selectIpArr().toArray();
+		return (String[]) newtconfigDAO.selectIpArr().toArray();
 	}
 	
 	public static String selectContractAddress(String cfgKey) {
-		return tconfigDAO.selectContractAddress(cfgKey);
+		return newtconfigDAO.selectContractAddress(cfgKey);
 	}
 	
 	public static String selectRootPath(String cfgKey) {
-		return tconfigDAO.selectRootPath(cfgKey);
+		return newtconfigDAO.selectRootPath(cfgKey);
 	}
 	
 	public static String selectDefaultPassword() {
-		return tconfigDAO.selectDefaultPassword();
+		return newtconfigDAO.selectDefaultPassword();
 	}
 }
 

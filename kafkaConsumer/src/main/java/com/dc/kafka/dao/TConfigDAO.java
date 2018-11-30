@@ -12,4 +12,6 @@ public interface TConfigDAO {
 	String selectRootPath(@Param("cfgKey")String cfgKey);
 	
 	String selectDefaultPassword();
+	
+	String selectValueByKey(@Param("cfgKey")String cfgKey);
 }
