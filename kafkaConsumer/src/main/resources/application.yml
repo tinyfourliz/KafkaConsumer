@@ -36,7 +36,9 @@ spring:
 mybatis:
   mapper-locations: classpath:mapper/*.xml
   type-aliases-package: com.digitalchina.xa.it.model
-
+  configuration:
+    map-underscore-to-camel-case: true
+    
 #pagehelper
 pagehelper:
     helperDialect: mysql
