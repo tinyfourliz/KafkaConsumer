@@ -28,8 +28,8 @@ public class TConfigUtils {
 		return ipArr.get(new Random().nextInt(5));
 	}
 	
-	public static String[] selectIpArr() {
-		return (String[]) newtconfigDAO.selectIpArr().toArray();
+	public static List<String> selectIpArr() {
+		return newtconfigDAO.selectIpArr();
 	}
 	
 	public static String selectContractAddress(String cfgKey) {
