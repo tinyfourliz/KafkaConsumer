@@ -93,6 +93,11 @@ public class KafkaConsumerCashBack {
             
             System.out.println("将返现信息记录至vm_cashback_details表中:" + "INSERT INTO vm_cashback_details (itcode, account, cashBackValue, limitFlag) VALUES ("+ bean.getContractName() + ", " + transactionManager.getFromAddress() + ", " + bean.getTurnBalance() + ", 1");
             jdbc.execute("INSERT INTO vm_cashback_details (itcode, account, cashBackValue, limitFlag) VALUES ('"+ bean.getContractName() + "', '" + transactionManager.getFromAddress() + "', " + bean.getTurnBalance().doubleValue()/10000000000000000L + ", 1)");
+            
+//        	fromcount tocount fromitcode toitcode flag turnhash turndate value contracttype remark contractid
+		//	system_transactiondetail表，根据contracttype，contractid更新交易哈希，flag，获取gas并更新？
+            //jdbc.execute("UPDATE system_transactiondetail SET turnhash = '" + resultHash + "', gas = " + Double.valueOf(transactionReceipt.getGasUsed().toString()) + ", flag = 1 WHERE contracttype = TODO AND contractid = " + bean.getTransactionDetailId());
+            
             resultHash="";
             return resultHash;
         } catch (Exception e) {

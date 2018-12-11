@@ -85,6 +85,11 @@ public class KafkaConsumerPaidVotes {
             System.out.println("将交易Hash值更新至t_paidvote_detail表中:" + "UPDATE am_lessonbuy SET transactionHash = '" + resultHash + "' WHERE id = " + bean.getTransactionDetailId() + "; ");
             jdbc.execute("UPDATE t_paidvote_detail SET transactionHash = '" + resultHash + "' WHERE id = " + bean.getTransactionDetailId() + "; ");
             
+//        	fromcount tocount fromitcode toitcode flag turnhash turndate value contracttype remark contractid
+		//	system_transactiondetail表，根据contracttype，contractid更新交易哈希，flag，获取gas并更新？
+            jdbc.execute("UPDATE system_transactiondetail SET turnhash = '" + resultHash + "', gas = " + Double.valueOf(transactionReceipt.getGasUsed().toString()) + ", flag = 1 WHERE contracttype = TODO AND contractid = " + bean.getTransactionDetailId());
+ 
+            
             return resultHash;
         } catch (Exception e) {
             // TODO Auto-generated catch block
