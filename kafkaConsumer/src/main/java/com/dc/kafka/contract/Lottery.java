@@ -12,7 +12,7 @@ import org.web3j.abi.datatypes.Event;
 import org.web3j.abi.datatypes.Function;
 import org.web3j.abi.datatypes.Type;
 import org.web3j.abi.datatypes.generated.Uint256;
-import org.web3j.abi.datatypes.generated.Uint8;
+import org.web3j.abi.datatypes.generated.Uint32;
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameter;
@@ -35,7 +35,7 @@ import rx.functions.Func1;
  * <p>Generated with web3j version 3.4.0.
  */
 public class Lottery extends Contract {
-    private static final String BINARY = "6060604052341561000f57600080fd5b60008054600160a060020a033316600160a060020a03199091161790556101be8061003b6000396000f3006060604052600436106100615763ffffffff7c010000000000000000000000000000000000000000000000000000000060003504166341c0e1b581146100665780636ab644971461007b578063713ed42d146100895780638da5cb5b14610091575b600080fd5b341561007157600080fd5b6100796100cd565b005b61007960ff60043516610110565b610079610174565b341561009c57600080fd5b6100a4610176565b60405173ffffffffffffffffffffffffffffffffffffffff909116815260200160405180910390f35b6000543373ffffffffffffffffffffffffffffffffffffffff9081169116146100f557600080fd5b60005473ffffffffffffffffffffffffffffffffffffffff16ff5b7f8c1713d82ee1f28894f324a91a848f2e0c3b4e6f938c16cf05a9eda4177fc05633348360405173ffffffffffffffffffffffffffffffffffffffff9093168352602083019190915260ff166040808301919091526060909101905180910390a150565b565b60005473ffffffffffffffffffffffffffffffffffffffff16815600a165627a7a723058202edba2df7c6357a97f65ed417795c98cc4627edd30fd9b4ec70e73d6229ad3bd0029";
+    private static final String BINARY = "6060604052341561000f57600080fd5b60008054600160a060020a033316600160a060020a03199091161790556101c48061003b6000396000f3006060604052600436106100615763ffffffff7c010000000000000000000000000000000000000000000000000000000060003504166341c0e1b581146100665780635b8e6f661461007b578063713ed42d1461008c5780638da5cb5b14610094575b600080fd5b341561007157600080fd5b6100796100d0565b005b61007963ffffffff60043516610113565b61007961017a565b341561009f57600080fd5b6100a761017c565b60405173ffffffffffffffffffffffffffffffffffffffff909116815260200160405180910390f35b6000543373ffffffffffffffffffffffffffffffffffffffff9081169116146100f857600080fd5b60005473ffffffffffffffffffffffffffffffffffffffff16ff5b7f3eef276644a7d9081e6dfb2c91d4519378adc1e36a6b6c9f69f3760f0bf7e26433348360405173ffffffffffffffffffffffffffffffffffffffff9093168352602083019190915263ffffffff166040808301919091526060909101905180910390a150565b565b60005473ffffffffffffffffffffffffffffffffffffffff16815600a165627a7a72305820bdaa280156c69b6317050747abcf9a97aff3b7514d88dd505edd49c87a5781730029";
 
     public static final String FUNC_KILL = "kill";
 
@@ -47,7 +47,7 @@ public class Lottery extends Contract {
 
     public static final Event LOTTERYEVENT_EVENT = new Event("lotteryEvent", 
             Arrays.<TypeReference<?>>asList(),
-            Arrays.<TypeReference<?>>asList(new TypeReference<Address>() {}, new TypeReference<Uint256>() {}, new TypeReference<Uint8>() {}));
+            Arrays.<TypeReference<?>>asList(new TypeReference<Address>() {}, new TypeReference<Uint256>() {}, new TypeReference<Uint32>() {}));
     ;
 
     protected Lottery(String contractAddress, Web3j web3j, Credentials credentials, BigInteger gasPrice, BigInteger gasLimit) {
@@ -66,7 +66,7 @@ public class Lottery extends Contract {
         return executeRemoteCallTransaction(function);
     }
 
-    public RemoteCall<TransactionReceipt> paidLottery(Uint8 lotteryId, BigInteger weiValue) {
+    public RemoteCall<TransactionReceipt> paidLottery(Uint32 lotteryId, BigInteger weiValue) {
         final Function function = new Function(
                 FUNC_PAIDLOTTERY, 
                 Arrays.<Type>asList(lotteryId), 
@@ -105,7 +105,7 @@ public class Lottery extends Contract {
             typedResponse.log = eventValues.getLog();
             typedResponse.account = (Address) eventValues.getNonIndexedValues().get(0);
             typedResponse.value = (Uint256) eventValues.getNonIndexedValues().get(1);
-            typedResponse.lotteryId = (Uint8) eventValues.getNonIndexedValues().get(2);
+            typedResponse.lotteryId = (Uint32) eventValues.getNonIndexedValues().get(2);
             responses.add(typedResponse);
         }
         return responses;
@@ -120,7 +120,7 @@ public class Lottery extends Contract {
                 typedResponse.log = log;
                 typedResponse.account = (Address) eventValues.getNonIndexedValues().get(0);
                 typedResponse.value = (Uint256) eventValues.getNonIndexedValues().get(1);
-                typedResponse.lotteryId = (Uint8) eventValues.getNonIndexedValues().get(2);
+                typedResponse.lotteryId = (Uint32) eventValues.getNonIndexedValues().get(2);
                 return typedResponse;
             }
         });
@@ -147,6 +147,6 @@ public class Lottery extends Contract {
 
         public Uint256 value;
 
-        public Uint8 lotteryId;
+        public Uint32 lotteryId;
     }
 }

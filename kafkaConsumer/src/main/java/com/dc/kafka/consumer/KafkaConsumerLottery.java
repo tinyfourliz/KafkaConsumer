@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 import org.web3j.abi.datatypes.Address;
+import org.web3j.abi.datatypes.generated.Uint32;
 import org.web3j.abi.datatypes.generated.Uint8;
 import org.web3j.crypto.CipherException;
 import org.web3j.crypto.Credentials;
@@ -74,7 +75,7 @@ public class KafkaConsumerLottery {
         
         TransactionReceipt transactionReceipt;
         try {
-            transactionReceipt = contract.paidLottery(new Uint8(bean.getTransactionDetailId()), bean.getTurnBalance()).send();
+            transactionReceipt = contract.paidLottery(new Uint32(bean.getTransactionDetailId()), bean.getTurnBalance()).send();
             
             String resultHash = transactionReceipt.getTransactionHash();
             System.out.println(resultHash);
