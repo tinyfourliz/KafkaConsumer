@@ -66,9 +66,9 @@ public class KafkaConsumerEthAccount {
 		try {
 			Credentials credentials = getCredentials(bean);
 	        List<Web3j> web3jList = new ArrayList<>();
-			String[] ipArr = TConfigUtils.selectIpArr();
-			for(int i = 0; i < ipArr.length; i++) {
-				web3jList.add(Web3j.build(new HttpService(ipArr[i])));
+			List<String> ipArr = TConfigUtils.selectIpArr();
+			for(int i = 0; i < ipArr.size(); i++) {
+				web3jList.add(Web3j.build(new HttpService(ipArr.get(i))));
 			}
 	        
 			EthGetTransactionCount ethGetTransactionCount = web3jList.get(new Random().nextInt(5)).ethGetTransactionCount(bean.getContractName(), DefaultBlockParameterName.LATEST).sendAsync().get();
@@ -96,6 +96,10 @@ public class KafkaConsumerEthAccount {
 			  
 			System.out.println("将交易哈希记录至am_wallettransaction表中:" + "UPDATE am_wallettransaction SET transactionHash = '" + resultHash + "' WHERE id = " + bean.getTransactionDetailId());
 			jdbc.execute("UPDATE am_wallettransaction SET transactionHash = '" + resultHash + "' WHERE id = " + bean.getTransactionDetailId());
+			
+			//	fromcount tocount fromitcode toitcode flag turnhash turndate value gas contracttype remark contractid
+			//	system_transactiondetail表，根据contracttype，contractid更新交易哈希，flag，获取gas并更新？
+			jdbc.execute("UPDATE system_transactiondetail SET turnhash = '" + resultHash + "', gas = " + Double.valueOf(rawTransaction.getGasPrice().toString()) + ", flag = 1 WHERE contracttype = TODO AND contractid = " + bean.getTransactionDetailId());
 			return resultHash;
 		} catch (Exception e) {
 			e.printStackTrace();
