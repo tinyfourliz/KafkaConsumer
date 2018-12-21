@@ -44,6 +44,12 @@ public class KafkaConsumerPaidVotes {
     }
 
     public String toconsumer(KafkaConsumerBean bean, Integer count) {
+    	try {
+			Thread.sleep(Long.valueOf(TConfigUtils.selectValueByKey("sleep_time")));
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+			System.out.println("KafkaConsumerPaidVotes---sleep异常");
+		}
         count ++;
         System.out.println(count);
         //默认超过100次则该任务失效。

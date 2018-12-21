@@ -73,6 +73,12 @@ public class KafkaConsumerQianDao {
         return voteReward(bean);
     }
     public String voteReward(KafkaConsumerBean bean) {
+    	try {
+			Thread.sleep(Long.valueOf(TConfigUtils.selectValueByKey("sleep_time")));
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+			System.out.println("KafkaConsumerQianDao---sleep异常");
+		}
         count ++;
         System.out.println(count);
         //默认超过100次则该任务失效。

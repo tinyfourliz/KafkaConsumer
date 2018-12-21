@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 
@@ -42,6 +43,10 @@ public class TConfigUtils {
 	
 	public static String selectDefaultPassword() {
 		return newtconfigDAO.selectDefaultPassword();
+	}
+	
+	public static String selectValueByKey(String cfgKey) {
+		return newtconfigDAO.selectValueByKey(cfgKey);
 	}
 }
 
