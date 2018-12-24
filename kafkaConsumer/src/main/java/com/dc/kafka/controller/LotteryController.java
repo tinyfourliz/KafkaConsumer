@@ -61,7 +61,7 @@ public class LotteryController {
 		String keystoreFile = list.get(0).get("keystore").toString();
 		String password = TConfigUtils.selectDefaultPassword();
         String contractName = "LotteryIssueSZBReward";
-        String contractAddress = TConfigUtils.selectContractAddress("lottery_contract_test");
+        String contractAddress = TConfigUtils.selectContractAddress("lottery_contract");
         
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String turndate = sdf.format(System.currentTimeMillis());
