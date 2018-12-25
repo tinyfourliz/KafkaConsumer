@@ -100,6 +100,9 @@ public class KafkaConsumerLottery {
             System.out.println("将交易Hash值更新至t_paidlottery_details表中:" + "UPDATE t_paidvote_details SET hashcode = '" + resultHash + "' WHERE id = " + bean.getTransactionDetailId() + "; ");
             jdbc.execute("UPDATE t_paidlottery_details SET hashcode = '" + resultHash + "',account = '" + credentials.getAddress() + "' WHERE id = " + bean.getTransactionDetailId() + "; ");
             
+            System.out.println("将交易Hash值更新至system_transactiondetail表中:" + "UPDATE system_transactiondetail SET fromcount = '" + credentials.getAddress() + "', turnhash = '" + resultHash + "', gas = " + Double.valueOf(transactionReceipt.getGasUsed().toString()) + ", flag = 1 WHERE contracttype = 'LotteryBuyTicket' AND contractid = " + bean.getTransactionDetailId() + ";");
+            jdbc.execute("UPDATE system_transactiondetail SET fromcount = '" + credentials.getAddress() + "', turnhash = '" + resultHash + "', gas = " + Double.valueOf(transactionReceipt.getGasUsed().toString()) + ", flag = 1 WHERE contracttype = 'LotteryBuyTicket' AND contractid = " + bean.getTransactionDetailId() + ";");
+            
             return resultHash;
         } catch (Exception e) {
             // TODO Auto-generated catch block
